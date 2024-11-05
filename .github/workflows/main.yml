@@ -54,6 +54,6 @@ jobs:
 
       - name: Run tests
         run: |
-          mysql -h 127.0.0.1 --port 8888 -u root -ppassword -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
-          mysql -h 127.0.0.1 --port 8888 -u root -ppassword -e 'flush privileges;'
+          mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
+          mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e 'flush privileges;'
           npm run test
