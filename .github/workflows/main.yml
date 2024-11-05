@@ -22,12 +22,12 @@ jobs:
       - name: Force use of Node.js 16.20.0
         uses: actions/setup-node@v2
         with:
-          node-version: 16.20.0
+          node-version: '18'
 
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          node-version: 16.20.0
+          node-version: '18'
 
       - name: Inject environment variables
         run: |
