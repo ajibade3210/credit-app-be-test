@@ -49,21 +49,17 @@ jobs:
       - name: Compile TypeScript
         run: npm run build
 
-      - name: Wait for MySQL to be ready
-        run: |
-          until mysqladmin ping -h 127.0.0.1 --port=3306 --silent; do
-            echo "Waiting for database connection..."
-            sleep 5
-          done
-
       - name: Configure MySQL Authentication
         run: |
           mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
           mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e 'flush privileges;'
 
-      - name: Run Knex migrations and seeds
+      - name: Run Knex migrations
         run: |
           npx knex migrate:latest
+
+      - name: Run Knex seeds
+        run: |
           npx knex seed:run
 
       - name: Run tests
