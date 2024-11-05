@@ -1,0 +1,59 @@
+name: Lendsqr Node.js Application Workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify_application:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0.21
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+        ports:
+          - "8888:3306"
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Force use of Node.js 16.20.0
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.20.0
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          node-version: 16.20.0
+
+      - name: Inject environment variables
+        run: |
+          cat << EOF > .env
+          # CONFIG
+          NODE_ENV=test
+          JWT_SECRET_KEY=Yl0J3RynSyozQugn34zIu1ELrt12GVCf
+          DummySeedPass=@tehpasswor1
+
+          # DATABASE
+          DB_HOST=127.0.0.1
+          DB_USER=root
+          DB_PASSWORD=password
+          DB_DATABASE=test
+          DB_PORT=3306
+
+      - name: Installation
+        run: |
+          sudo npm install --global yarn@1.22.5
+          yarn install
+
+      - name: Compile TypeScript
+        run: npm run build
+
+      - name: Run tests
+        run: |
+          mysql -h 127.0.0.1 --port 8888 -u root -ppassword -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
+          mysql -h 127.0.0.1 --port 8888 -u root -ppassword -e 'flush privileges;'
+          npm run test

@@ -5,8 +5,6 @@ import bcrypt from "bcryptjs";
 
 const SEED_COUNT = 10;
 const TEST_EMAIL = "testuser@demo.com";
-
-// Fetch the seed password from environment or fallback to default
 const password = process.env.DummySeedPass;
 
 if (!password) {
