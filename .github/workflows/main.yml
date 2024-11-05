@@ -74,8 +74,5 @@ jobs:
         run: |
           mysql -h 127.0.0.1 -P 3306 -u root -ppassword -e "SHOW TABLES IN test;"
 
-      - name: Show MySQL logs
-        run: docker logs mysql
-
       - name: Run tests
         run: npm run test
