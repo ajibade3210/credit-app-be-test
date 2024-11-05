@@ -16,7 +16,12 @@ jobs:
           MYSQL_DATABASE: test
         ports:
           - "3306:3306"
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: 
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+          --default-authentication-plugin=mysql_native_password  # Enforce mysql_native_password
 
     steps:
       - name: Set up Node.js
@@ -49,18 +54,18 @@ jobs:
       - name: Compile TypeScript
         run: npm run build
 
-      - name: Configure MySQL Authentication
+      - name: Wait for MySQL to be ready
         run: |
-          mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
-          mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e 'flush privileges;'
+          until mysqladmin ping -h 127.0.0.1 --port=3306 --silent; do
+            echo "Waiting for MySQL to be ready..."
+            sleep 5
+          done
 
       - name: Run Knex migrations
-        run: |
-          npx knex migrate:latest
+        run: npx knex migrate:latest
 
       - name: Run Knex seeds
-        run: |
-          npx knex seed:run
+        run: npx knex seed:run
 
       - name: Run tests
         run: npm run test
