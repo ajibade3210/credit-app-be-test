@@ -58,6 +58,11 @@ class BaseModel<T> {
       .del();
     return deletedCount;
   }
+
+  async findAndDelete(properties: Partial<T>): Promise<number> {
+    const deletedCount = await knex(this.tableName).where(properties).del();
+    return deletedCount;
+  }
 }
 
 export default BaseModel;

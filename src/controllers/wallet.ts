@@ -22,7 +22,7 @@ export const createWallet = async (
 
     const wallet = await walletModel.createWallet(userId, type, currency);
     if (!wallet) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
         message:
           "Wallet creation failed: Ensure user doesn’t already have this wallet type",
@@ -97,5 +97,42 @@ export const withdrawFunds = async (
     res.status(200).json({ message: "Withdrawal successful", wallet });
   } catch (err: any) {
     return next(err);
+  }
+};
+
+export const deleteUserWallet = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId, type } = req.params;
+    const wallet = await walletModel.findOne({ user_id: Number(userId) });
+    if (!wallet) {
+      return res.status(404).json({
+        success: false,
+        message: "Wallet not found",
+      });
+    }
+
+    const deletedCount = await walletModel.findAndDelete({
+      user_id: Number(userId),
+      type,
+      balance: "0.00", // wallet must be empty before deleting
+    });
+    console.log("deletedCount: -- -- >> ", deletedCount);
+
+    if (deletedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Wallet not found!",
+      });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Wallet deleted successfully." });
+  } catch (error) {
+    next(error);
   }
 };

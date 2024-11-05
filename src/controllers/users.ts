@@ -89,10 +89,8 @@ export const getUserWallets = async (
 ) => {
   try {
     const userId = Number(req.userId);
-    console.log('userId: -- >>>  ', userId);
 
     const user = await userModel.getUserWallets(userId);
-    console.log('user: ', user);
     if (!user) {
       return res.status(400).send({ message: "User not found" });
     }

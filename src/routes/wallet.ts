@@ -9,7 +9,7 @@ import {
   withdrawFundWalletValidation,
 } from "../utils/validation";
 import { verifyToken } from "../middleware/auth";
-import { createWallet, fundWallet, withdrawFunds } from "../controllers/wallet";
+import { createWallet, deleteUserWallet, fundWallet, withdrawFunds } from "../controllers/wallet";
 
 const router = express.Router();
 
@@ -36,5 +36,7 @@ router.patch(
   verifyToken,
   withdrawFunds
 );
+
+router.delete("/:userId/:type",verifyToken, deleteUserWallet);
 
 export default router;

@@ -3,7 +3,29 @@ import "dotenv/config";
 
 const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_DATABASE } = process.env;
 
+const sharedConfig: Partial<Knex.Config> = {
+  pool: {
+    min: 2,
+    max: 10,
+  },
+  migrations: {
+    tableName: "knex_migrations",
+  },
+};
+
 const config: { [key: string]: Knex.Config } = {
+  test: {
+    client: "mysql",
+    connection: {
+      host: DB_HOST,
+      port: Number(DB_PORT),
+      user: DB_USER,
+      password: DB_PASSWORD,
+      database: DB_DATABASE,
+    },
+    ...sharedConfig,
+  },
+
   development: {
     client: "mysql",
     connection: {
@@ -13,13 +35,7 @@ const config: { [key: string]: Knex.Config } = {
       password: DB_PASSWORD,
       database: DB_DATABASE,
     },
-    pool: {
-      min: 2,
-      max: 10,
-    },
-    migrations: {
-      tableName: "knex_migrations",
-    },
+    ...sharedConfig,
   },
 
   staging: {
@@ -31,13 +47,7 @@ const config: { [key: string]: Knex.Config } = {
       password: DB_PASSWORD,
       database: DB_DATABASE,
     },
-    pool: {
-      min: 2,
-      max: 10,
-    },
-    migrations: {
-      tableName: "knex_migrations",
-    },
+    ...sharedConfig,
   },
 
   production: {
@@ -49,13 +59,7 @@ const config: { [key: string]: Knex.Config } = {
       password: DB_PASSWORD,
       database: DB_DATABASE,
     },
-    pool: {
-      min: 2,
-      max: 10,
-    },
-    migrations: {
-      tableName: "knex_migrations",
-    },
+    ...sharedConfig,
   },
 };
 
