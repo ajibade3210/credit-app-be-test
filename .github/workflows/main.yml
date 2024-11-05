@@ -70,5 +70,9 @@ jobs:
       - name: Run Knex seeds
         run: npx knex seed:run
 
+      - name: Verify MySQL tables
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -ppassword -e "SHOW TABLES IN test;"
+          
       - name: Run tests
         run: npm run test
