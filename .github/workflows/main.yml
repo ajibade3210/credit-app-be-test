@@ -56,6 +56,11 @@ jobs:
             sleep 5
           done
 
+      - name: Configure MySQL Authentication
+        run: |
+          mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
+          mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e 'flush privileges;'
+
       - name: Run Knex migrations and seeds
         run: |
           npx knex migrate:latest
