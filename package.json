@@ -7,8 +7,8 @@
     "test": "jest",
     "dev": "nodemon",
     "build": "npm install && npx tsc",
-    "prebuild": "npx knex migrate:latest  && npx knex seed:run",
-    "start": "node ./dist/src/index.js"
+    "start": "node ./dist/src/index.js",
+    "prestart": "npx knex migrate:latest  && npx knex seed:run"
   },
   "keywords": [],
   "author": "",

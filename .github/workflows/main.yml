@@ -15,19 +15,17 @@ jobs:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: test
         ports:
-          - "8888:3306"
+          - "3306:3306"
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Force use of Node.js 16.20.0
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '18'
 
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          node-version: '18'
 
       - name: Inject environment variables
         run: |
@@ -43,11 +41,10 @@ jobs:
           DB_PASSWORD=password
           DB_DATABASE=test
           DB_PORT=3306
+          EOF
 
-      - name: Installation
-        run: |
-          sudo npm install --global yarn@1.22.5
-          yarn install
+      - name: Install dependencies
+        run: yarn install
 
       - name: Compile TypeScript
         run: npm run build
@@ -59,8 +56,10 @@ jobs:
             sleep 5
           done
 
-      - name: Run tests
+      - name: Run Knex migrations and seeds
         run: |
-          mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
-          mysql -h 127.0.0.1 --port 3306 -u root -ppassword -e 'flush privileges;'
-          npm run test
+          npx knex migrate:latest
+          npx knex seed:run
+
+      - name: Run tests
+        run: npm run test
