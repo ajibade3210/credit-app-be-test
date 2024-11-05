@@ -2,6 +2,8 @@ import request from "supertest";
 import app from "../app";
 import { authToken } from "./jest.setup";
 
+console.log("environment -- ", process.env.NODE_ENV);
+
 describe("User Controller Tests", () => {
   it("should fund user wallet account as beneficiary successfully", async () => {
     // create wallet
