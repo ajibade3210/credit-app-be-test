@@ -83,7 +83,6 @@ class TransactionModel extends BaseModel<Transaction> {
       };
     } catch (error) {
       if (!trx) await transaction.rollback();
-      console.error("Error transferring funds:", error);
       throw error;
     }
   }
