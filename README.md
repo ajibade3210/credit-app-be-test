@@ -131,7 +131,7 @@ This serves as the primary table with basic information about users, including f
 Where our unique_email column is explicitly set to be unique, ensuring that each user has a distinct email.
 
 ### Wallets Table:
-Designed as a child table of the users table, it represents different wallets that each user can own. The user_id field acts as a foreign key referencing the users table.
+Designed as a child table of the users table, it represents different wallets that each user can own. The `user_id` field acts as a foreign key referencing the users table.
 
 The **type column** allows only specific values (standard, regular, or premium), enforcing type consistency with a native database enum (wallet_type). Where a user can have multiple wallets but of one type.
 
@@ -140,11 +140,18 @@ To do this we are using a unique constraint on `user_id` and `type` this ensures
 ### Transactions Table:
 Represents transactions associated with wallets
 
-wallet_id is a foreign key referencing the wallets table, establishing the wallet context for each transaction.
+`wallet_id` is a foreign key referencing the wallets table, establishing the wallet context for each transaction.
 
-mandate_id and beneficiary_id reference the users table to capture the transaction initiator and the recipient respectively.
+`mandate_id` and `beneficiary_id` reference the users table to capture the transaction initiator and the recipient respectively.
 
 Setting these fields with onDelete("CASCADE") ensures that if a user or wallet is deleted, the related transactions are also removed, maintaining referential integrity.
+
+## Relationships
+The design used here includes both one-to-many and many-to-many relationships:
+
+**One-to-Many (Users to Wallets)**: Each user can have multiple wallets, but each wallet belongs to only one user. This relationship is represented by the `user_id` foreign key in the wallets table, creating a one-to-many link between users and wallets.
+
+**Many-to-Many (Users to Transactions)**: The transactions table represents a many-to-many relationship between users, as each transaction involves two users — the mandate (initiator) and the beneficiary (recipient). This is achieved by including both `mandate_id` and `beneficiary_id` as foreign keys in the transactions table, each referencing the users table. In effect, this allows each user to participate in multiple transactions, either as a mandate or a beneficiary, while each transaction involves two distinct users.
 
 ## Normalization:
 Our database structure adheres to third normal form (3NF), where data is stored in multiple tables with clear primary and foreign keys linking them. This reduces redundancy by ensuring that each piece of data (such as user information) is stored only once and is referenced by related tables.
@@ -159,3 +166,4 @@ Use of enums and specified data types (e.g., decimal for balance) ensures that d
 ## Scalability and Maintainability:
 
 This approach allows flexibility in adding more wallet types or additional relationships (e.g., additional transaction types). With this we can create wallets of different types, currency etc.
+
