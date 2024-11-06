@@ -120,3 +120,42 @@ DummySeedPass=@tehpasswor1
 JWT_SECRET_KEY=your-secret
 # NODE_ENV=test
 ```
+
+## Database Design Approach Used
+The database design approach used in this Demo API service is a relational database design with a normalized structure.
+
+Here’s a breakdown of the design choices made and implications:
+### Users Table:
+This serves as the primary table with basic information about users, including fields such as bvn (Bank Verification Number), first_name, last_name, phone_number, and unique_email.
+
+Where our unique_email column is explicitly set to be unique, ensuring that each user has a distinct email.
+
+### Wallets Table:
+Designed as a child table of the users table, it represents different wallets that each user can own. The user_id field acts as a foreign key referencing the users table.
+
+The **type column** allows only specific values (standard, regular, or premium), enforcing type consistency with a native database enum (wallet_type). Where a user can have multiple wallets but of one type.
+
+To do this we are using a unique constraint on `user_id` and `type` this ensures that a user cannot have multiple wallets of the same type, which follows the user's requirement of one wallet type per user ID.
+
+### Transactions Table:
+Represents transactions associated with wallets
+
+wallet_id is a foreign key referencing the wallets table, establishing the wallet context for each transaction.
+
+mandate_id and beneficiary_id reference the users table to capture the transaction initiator and the recipient respectively.
+
+Setting these fields with onDelete("CASCADE") ensures that if a user or wallet is deleted, the related transactions are also removed, maintaining referential integrity.
+
+## Normalization:
+Our database structure adheres to third normal form (3NF), where data is stored in multiple tables with clear primary and foreign keys linking them. This reduces redundancy by ensuring that each piece of data (such as user information) is stored only once and is referenced by related tables.
+
+## Data Constraints and Integrity:
+
+Primary and unique constraints, like unique_email in the users table and unique(["user_id", "type"]) in the wallets table, are used to enforce data integrity at the database level.
+
+Foreign key constraints with onDelete("CASCADE") ensure that deletions in parent tables cascade to child tables, preventing orphaned records.
+Use of enums and specified data types (e.g., decimal for balance) ensures that data is stored consistently.
+
+## Scalability and Maintainability:
+
+This approach allows flexibility in adding more wallet types or additional relationships (e.g., additional transaction types). With this we can create wallets of different types, currency etc.
