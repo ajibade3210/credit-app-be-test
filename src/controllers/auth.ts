@@ -63,15 +63,15 @@ export const signUp = async (
     }
 
     // check blacklist
-    // const isBlacklisted = await Service.Lendsqr.checkIfBlacklisted(
-    //   req.body.unique_email
-    // );
+    const isBlacklisted = await Service.Lendsqr.checkIfBlacklisted(
+      req.body.unique_email
+    );
 
-    // if (isBlacklisted && isBlacklisted.data) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "This user has been blacklisted" });
-    // }
+    if (isBlacklisted && isBlacklisted.data?.default_date) {
+      return res
+        .status(400)
+        .json({ message: "This user has been blacklisted" });
+    }
 
     const hash = await bcrypt.hash(req.body.password, 8);
     const userId = await userModel.create({
