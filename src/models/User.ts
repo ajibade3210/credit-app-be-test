@@ -157,15 +157,15 @@ class UserModel extends BaseModel<User> {
     };
   }
 
-  async getTransactionWithUsers(transactionId: number): Promise<{
-    transaction:
-      | (Transaction & {
-          mandateUser?: User;
-          beneficiaryUser?: User;
-        })
-      | undefined;
-  }> {
-    const result = await knex("transactions")
+  async getUserTransactions(userId: number): Promise<
+    Array<{
+      transaction: Transaction & {
+        userRole: "mandate" | "beneficiary";
+        otherUser?: User;
+      };
+    }>
+  > {
+    const results = await knex("transactions")
       .leftJoin(
         "users as mandate_user",
         "transactions.mandate_id",
@@ -177,7 +177,7 @@ class UserModel extends BaseModel<User> {
         "beneficiary_user.id"
       )
       .select(
-        // Transaction details
+        // All Transaction details
         "transactions.id as transaction_id",
         "transactions.amount",
         "transactions.reference",
@@ -202,47 +202,61 @@ class UserModel extends BaseModel<User> {
         "beneficiary_user.phone_number as beneficiary_phone_number",
         "beneficiary_user.unique_email as beneficiary_unique_email"
       )
-      .where("transactions.id", transactionId)
-      .first();
+      .where("transactions.mandate_id", userId)
+      .orWhere("transactions.beneficiary_id", userId);
 
-    if (!result) {
-      return { transaction: undefined };
+    if (results.length <= 0) {
+      return [];
     }
 
-    const transaction = {
-      id: result.transaction_id,
-      amount: result.amount,
-      reference: result.reference,
-      narration: result.narration,
-      wallet_id: result.wallet_id,
-      created_at: result.transaction_created_at,
-      updated_at: result.transaction_updated_at,
-    } as Transaction;
+    return results.map(result => {
+      const transaction = {
+        id: result.transaction_id,
+        amount: result.amount,
+        reference: result.reference,
+        narration: result.narration,
+        wallet_id: result.wallet_id,
+        created_at: result.transaction_created_at,
+        updated_at: result.transaction_updated_at,
+      } as Transaction;
 
-    const mandateUser = result.mandate_user_id
-      ? ({
-          id: result.mandate_user_id,
-          bvn: result.mandate_bvn,
-          first_name: result.mandate_first_name,
-          last_name: result.mandate_last_name,
-          phone_number: result.mandate_phone_number,
-          unique_email: result.mandate_unique_email,
-        } as User)
-      : undefined;
+      let userRole: "mandate" | "beneficiary";
+      let otherUser: User | undefined;
 
-    const beneficiaryUser = result.beneficiary_user_id
-      ? ({
-          id: result.beneficiary_user_id,
-          bvn: result.beneficiary_bvn,
-          first_name: result.beneficiary_first_name,
-          last_name: result.beneficiary_last_name,
-          phone_number: result.beneficiary_phone_number,
-          unique_email: result.beneficiary_unique_email,
-        } as User)
-      : undefined;
+      if (result.mandate_user_id === userId) {
+        userRole = "mandate";
+        otherUser = result.beneficiary_user_id
+          ? ({
+              id: result.beneficiary_user_id,
+              bvn: result.beneficiary_bvn,
+              first_name: result.beneficiary_first_name,
+              last_name: result.beneficiary_last_name,
+              phone_number: result.beneficiary_phone_number,
+              unique_email: result.beneficiary_unique_email,
+            } as User)
+          : undefined;
+      } else {
+        userRole = "beneficiary";
+        otherUser = result.mandate_user_id
+          ? ({
+              id: result.mandate_user_id,
+              bvn: result.mandate_bvn,
+              first_name: result.mandate_first_name,
+              last_name: result.mandate_last_name,
+              phone_number: result.mandate_phone_number,
+              unique_email: result.mandate_unique_email,
+            } as User)
+          : undefined;
+      }
 
-    // Return the transaction with related user details
-    return { transaction: { ...transaction, mandateUser, beneficiaryUser } };
+      return {
+        transaction: {
+          ...transaction,
+          userRole,
+          otherUser,
+        },
+      };
+    });
   }
 }
 

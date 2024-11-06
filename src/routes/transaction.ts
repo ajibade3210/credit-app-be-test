@@ -7,7 +7,10 @@ import {
   validate,
 } from "../utils/validation";
 import { verifyToken } from "../middleware/auth";
-import { transferFunds } from "../controllers/transaction";
+import {
+  getTransactionDetails,
+  transferFunds,
+} from "../controllers/transaction";
 
 const router = express.Router();
 
@@ -18,5 +21,7 @@ router.post(
   verifyToken,
   transferFunds
 );
+
+router.get("/:transferId", verifyToken, getTransactionDetails);
 
 export default router;

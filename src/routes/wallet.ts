@@ -9,7 +9,12 @@ import {
   withdrawFundWalletValidation,
 } from "../utils/validation";
 import { verifyToken } from "../middleware/auth";
-import { createWallet, deleteUserWallet, fundWallet, withdrawFunds } from "../controllers/wallet";
+import {
+  createWallet,
+  deleteUserWallet,
+  fundWallet,
+  withdrawFunds,
+} from "../controllers/wallet";
 
 const router = express.Router();
 
@@ -21,15 +26,9 @@ router.post(
   createWallet
 );
 
-router.patch(
-  "/fund",
-  fundWalletValidation(),
-  validate,
-  verifyToken,
-  fundWallet
-);
+router.post("/fund", fundWalletValidation(), validate, verifyToken, fundWallet);
 
-router.patch(
+router.post(
   "/withdraw",
   withdrawFundWalletValidation(),
   validate,
@@ -37,6 +36,6 @@ router.patch(
   withdrawFunds
 );
 
-router.delete("/:userId/:type",verifyToken, deleteUserWallet);
+router.delete("/:userId/:type", verifyToken, deleteUserWallet);
 
 export default router;

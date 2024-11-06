@@ -27,7 +27,7 @@ describe("User Controller Tests", () => {
 
   it("should get all user wallets", async () => {
     const response = await request(app)
-      .get("/v1/api/user/wallet")
+      .get("/v1/api/user/wallets")
       .set("Authorization", `Bearer ${authToken}`);
     expect(response.status).toBe(200);
     expect(response.body.user).toHaveProperty("first_name");
@@ -37,7 +37,7 @@ describe("User Controller Tests", () => {
 
   it("should fail to get all user wallets if not log-in", async () => {
     const response = await request(app)
-      .get("/v1/api/user/wallet")
+      .get("/v1/api/user/wallets")
       .set("Authorization", "");
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty(

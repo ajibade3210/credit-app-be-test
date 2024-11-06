@@ -3,8 +3,8 @@ import { check } from "express-validator";
 import {
   getAllUserBeneficiaryTransactions,
   getAllUserMandateTransactions,
+  getAllUserTransactions,
   getLoginUser,
-  getUserTransaction,
   getUserWallets,
 } from "../controllers/users";
 import { registerValidation, validate } from "../utils/validation";
@@ -13,12 +13,11 @@ import { verifyToken } from "../middleware/auth";
 const router = express.Router();
 
 router.get("/", verifyToken, getLoginUser);
-// router.get("/all", verifyToken, getLoginUser);
-router.get("/wallet", verifyToken, getUserWallets);
-router.get("/transaction", verifyToken, getUserTransaction);
-router.get("/transaction/mandate", verifyToken, getAllUserMandateTransactions);
+router.get("/wallets", verifyToken, getUserWallets);
+router.get("/transfers", verifyToken, getAllUserTransactions);
+router.get("/transfers/mandate", verifyToken, getAllUserMandateTransactions);
 router.get(
-  "/transaction/beneficiary",
+  "/transfers/beneficiary",
   verifyToken,
   getAllUserBeneficiaryTransactions
 );

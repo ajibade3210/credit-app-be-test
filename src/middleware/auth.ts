@@ -15,10 +15,11 @@ export const verifyToken = (
   next: NextFunction
 ) => {
   const authHeader = req.headers.authorization;
+  console.log('authHeader: --  ', authHeader);
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res
       .status(401)
-      .json({ message: "Authorization token missing" });
+      .json({ status: "failed", message: "Authorization token missing" });
   }
 
   const token = authHeader.split(" ")[1];
@@ -30,13 +31,17 @@ export const verifyToken = (
     ) as JwtPayload;
 
     if (!decoded.userId) {
-      return res.status(401).json({ message: "Invalid authorization token" });
+      return res
+        .status(401)
+        .json({ status: "failed", message: "Invalid authorization token" });
     }
 
     req.userId = decoded.userId;
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Invalid authorization token" });
+    return res
+      .status(401)
+      .json({ status: "failed", message: "Invalid authorization token" });
   }
 };
 

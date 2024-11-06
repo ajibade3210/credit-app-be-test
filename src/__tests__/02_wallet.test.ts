@@ -49,7 +49,7 @@ describe("User Controller Tests", () => {
       .set("Authorization", `Bearer ${authToken}`);
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("success", true);
+    expect(response.body).toHaveProperty("status", "success");
     expect(response.body).toHaveProperty(
       "message",
       "Wallet deleted successfully."

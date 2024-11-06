@@ -17,19 +17,19 @@ export const createWallet = async (
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "User not found" });
+        .json({ status: "failed", message: "User not found" });
     }
 
     const wallet = await walletModel.createWallet(userId, type, currency);
     if (!wallet) {
       return res.status(400).json({
-        success: false,
+        status: "failed",
         message:
           "Wallet creation failed: Ensure user doesn’t already have this wallet type",
       });
     }
     return res.status(201).json({
-      success: true,
+      status: "success",
       message: "Wallet Account created successfully",
       wallet,
     });
@@ -47,21 +47,22 @@ export const fundWallet = async (
     const { walletId, amount } = req.body;
 
     if (amount <= 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Amount must be greater than zero" });
+      return res.status(400).json({
+        status: "failed",
+        message: "Amount must be greater than zero",
+      });
     }
 
     const wallet = await walletModel.fundWallet(walletId, amount);
     if (!wallet) {
       return res
         .status(404)
-        .json({ success: false, message: "Wallet not found" });
+        .json({ status: "failed", message: "Wallet not found" });
     }
 
     return res
       .status(200)
-      .json({ success: true, message: "Wallet funded successfully" });
+      .json({ status: "success", message: "Wallet funded successfully" });
   } catch (err: any) {
     return next(err);
   }
@@ -86,7 +87,7 @@ export const withdrawFunds = async (
 
     if (result !== "wallet funded") {
       return res.status(400).json({
-        success: false,
+        status: "failed",
         message: `Withdrawal Failed: ${result}`,
       });
     }
@@ -110,27 +111,34 @@ export const deleteUserWallet = async (
     const wallet = await walletModel.findOne({ user_id: Number(userId) });
     if (!wallet) {
       return res.status(404).json({
-        success: false,
+        status: "failed",
         message: "Wallet not found",
+      });
+    }
+
+    if (Number(wallet.balance) > 0) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Wallet must be empty before it can be deleted",
       });
     }
 
     const deletedCount = await walletModel.findAndDelete({
       user_id: Number(userId),
       type,
-      balance: "0.00", // wallet must be empty before deleting
+      balance: "0.00"
     });
 
     if (deletedCount === 0) {
       return res.status(404).json({
-        success: false,
+        status: "failed",
         message: "Wallet not found!",
       });
     }
 
     return res
       .status(200)
-      .json({ success: true, message: "Wallet deleted successfully." });
+      .json({ status: "success", message: "Wallet deleted successfully." });
   } catch (error) {
     next(error);
   }

@@ -1,4 +1,4 @@
-# Demo Credit Wallet Service API
+# Demo Credit Wallet Service API [LIVE](https://olaoluajibade-lendsqr-be-test.onrender.com/api/test)
 
 Demo Credit is a mobile lending application designed to help borrowers manage their funds seamlessly. Borrowers use this service to receive loan disbursements directly into their wallets and make repayments.
 
