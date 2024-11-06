@@ -14,6 +14,10 @@ beforeEach(async () => {
   authToken = loginResponse.body.token;
 });
 
+afterAll(async () => {
+  await knex.destroy();
+}, 10000);
+
 describe('Setup Tests', () => {
   it('should pass this test', () => {
     expect(true).toBe(true);
