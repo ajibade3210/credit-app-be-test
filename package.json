@@ -4,7 +4,7 @@
   "description": "Hotel Server...",
   "main": "./src/index.ts",
   "scripts": {
-    "test": "jest",
+    "test": "cross-env NODE_ENV=test jest --forceExit",
     "dev": "nodemon",
     "build": "npm install && npx tsc",
     "start": "node ./dist/src/index.js",
@@ -32,6 +32,7 @@
     "mongoose": "^8.5.1",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
+    "mysql2": "^3.11.4",
     "pino": "^9.5.0",
     "pino-pretty": "^11.3.0",
     "stripe": "^16.6.0",

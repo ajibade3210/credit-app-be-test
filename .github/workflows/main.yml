@@ -1,0 +1,78 @@
+name: Lendsqr Node.js Application Workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify_application:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
+        ports:
+          - "3306:3306"
+        options:
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Inject environment variables
+        run: |
+          cat << EOF > .env
+          # CONFIG
+          NODE_ENV=test
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          DummySeedPass=${{ secrets.DUMMYSEEDPASS }}
+
+          # DATABASE
+          DB_HOST=127.0.0.1
+          DB_USER=root
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_DATABASE=${{ secrets.DB_DATABASE }}
+          DB_PORT=3306
+          EOF
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Compile TypeScript
+        run: npm run build
+
+      - name: Wait for MySQL to be ready
+        run: |
+          until mysqladmin ping -h 127.0.0.1 -P 3306 --silent; do
+            echo "Waiting for MySQL to be ready..."
+            sleep 5
+          done
+
+      - name: Create Database
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -p${{ secrets.DB_PASSWORD }} -e "CREATE DATABASE IF NOT EXISTS ${{ secrets.DB_DATABASE }};"
+
+      - name: Run Knex migrations
+        run: npx knex migrate:latest --env test
+
+      - name: Run Knex seeds
+        run: npx knex seed:run
+
+      - name: Verify MySQL tables
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -p${{ secrets.DB_PASSWORD }} -e "SHOW TABLES IN ${{ secrets.DB_DATABASE }};"
+
+      - name: Run tests
+        run: npm run test

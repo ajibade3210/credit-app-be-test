@@ -8,10 +8,9 @@ describe("User Controller Tests", () => {
       .post("/v1/api/wallet/create")
       .send({ userId: "11", type: "regular", currency: "NGN" })
       .set("Authorization", `Bearer ${authToken}`);
-
     expect(response.status).toBe(201);
     expect(response.body.wallet).toHaveProperty("id");
-    expect(response.body.wallet).toHaveProperty("balance", 0);
+    expect(response.body.wallet).toHaveProperty("balance", "0.00");
     expect(response.body.wallet).toHaveProperty("type", "regular");
     expect(response.body.wallet).toHaveProperty("currency", "NGN");
     expect(response.body).toHaveProperty(
@@ -37,11 +36,11 @@ describe("User Controller Tests", () => {
       .post("/v1/api/wallet/create")
       .send({ userId: "11", type: "regular", currency: "NGN" })
       .set("Authorization", `Bearer ${authToken}`);
-
     expect(response.status).toBe(400);
-    expect(response.body.message).toBeInstanceOf(Object);
-    expect(response.body.message).toHaveProperty("msg");
-    expect(response.body.message).toHaveProperty("location", "body");
+    expect(response.body).toHaveProperty(
+      "message",
+      "Wallet creation failed: Ensure user doesn’t already have this wallet type"
+    );
   });
 
   it("should delete user wallet", async () => {

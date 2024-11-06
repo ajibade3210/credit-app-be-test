@@ -120,7 +120,6 @@ export const deleteUserWallet = async (
       type,
       balance: "0.00", // wallet must be empty before deleting
     });
-    console.log("deletedCount: -- -- >> ", deletedCount);
 
     if (deletedCount === 0) {
       return res.status(404).json({

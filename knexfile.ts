@@ -15,7 +15,7 @@ const sharedConfig: Partial<Knex.Config> = {
 
 const config: { [key: string]: Knex.Config } = {
   test: {
-    client: "mysql",
+    client: "mysql2",
     connection: {
       host: DB_HOST,
       port: Number(DB_PORT),
@@ -27,7 +27,7 @@ const config: { [key: string]: Knex.Config } = {
   },
 
   development: {
-    client: "mysql",
+    client: "mysql2",
     connection: {
       host: DB_HOST,
       port: Number(DB_PORT),
@@ -39,7 +39,7 @@ const config: { [key: string]: Knex.Config } = {
   },
 
   staging: {
-    client: "mysql",
+    client: "mysql2",
     connection: {
       host: DB_HOST,
       port: Number(DB_PORT),
@@ -51,7 +51,7 @@ const config: { [key: string]: Knex.Config } = {
   },
 
   production: {
-    client: "mysql",
+    client: "mysql2",
     connection: {
       host: DB_HOST,
       port: Number(DB_PORT),

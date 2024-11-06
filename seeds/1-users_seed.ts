@@ -5,8 +5,6 @@ import bcrypt from "bcryptjs";
 
 const SEED_COUNT = 10;
 const TEST_EMAIL = "testuser@demo.com";
-
-// Fetch the seed password from environment or fallback to default
 const password = process.env.DummySeedPass;
 
 if (!password) {
@@ -51,5 +49,5 @@ export async function seed(knex: Knex): Promise<void> {
   const testUserData =
     process.env.NODE_ENV === "test" ? [await createTestUser()] : [];
 
-  await knex("users").insert([ ...users, ...testUserData]);
+  await knex("users").insert([...users, ...testUserData]);
 }
