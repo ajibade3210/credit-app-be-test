@@ -11,11 +11,11 @@ export const getLoginUser = async (
   try {
     const userId = Number(req.userId);
 
-    const data = await userModel.findOne({id: userId});
+    const data = await userModel.findOne({ id: userId });
     if (!data) {
       return res
         .status(400)
-        .send({ success: false, message: "User not found" });
+        .send({ status: "failed", message: "User not found" });
     }
     const { password, ...user } = data;
     return res.status(200).send(user);
@@ -24,7 +24,7 @@ export const getLoginUser = async (
   }
 };
 
-export const getUserTransaction = async (
+export const getAllUserTransactions = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -32,13 +32,13 @@ export const getUserTransaction = async (
   try {
     const userId = Number(req.userId);
 
-    const user = await userModel.getTransactionWithUsers(userId);
-    if (!user) {
+    const userTransaction = await userModel.getUserTransactions(userId);
+    if (userTransaction.length <= 0) {
       return res
         .status(400)
-        .send({ success: false, message: "User not found" });
+        .send({ status: "failed", message: "User transactions not found" });
     }
-    return res.status(200).send(user);
+    return res.status(200).send({ transactions: userTransaction });
   } catch (err: any) {
     return next(err);
   }
@@ -54,7 +54,9 @@ export const getAllUserMandateTransactions = async (
 
     const user = await userModel.getUserWithMandateTransactions(userId);
     if (!user) {
-      return res.status(400).send({ success: false, message: "User not found" });
+      return res
+        .status(400)
+        .send({ status: "failed", message: "User not found" });
     }
     return res.status(200).send(user);
   } catch (err: any) {
@@ -74,7 +76,7 @@ export const getAllUserBeneficiaryTransactions = async (
     if (!user) {
       return res
         .status(400)
-        .send({ success: false, message: "User not found" });
+        .send({ status: "failed", message: "User not found" });
     }
     return res.status(200).send(user);
   } catch (err: any) {
@@ -89,14 +91,16 @@ export const getUserWallets = async (
 ) => {
   try {
     const userId = Number(req.userId);
+    console.log("userId: --- -- - >>> ", userId);
 
     const user = await userModel.getUserWallets(userId);
     if (!user) {
-      return res.status(400).send({ message: "User not found" });
+      return res
+        .status(400)
+        .send({ status: "failed", message: "User not found" });
     }
     return res.status(200).send(user);
   } catch (err: any) {
     return next(err);
   }
 };
-

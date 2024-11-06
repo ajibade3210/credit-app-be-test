@@ -30,23 +30,21 @@ export const signIn = async (
 
     return res
       .status(200)
-      .send({ success: true, message: "User Sign In Successfully", token });
+      .send({ status: "success", message: "User Sign In Successfully", token });
   } catch (err: any) {
     return next(err);
   }
 };
 
 export const validateToken = (req: Request, res: Response) => {
-  return res.status(200).send({ success: true, userId: req.userId });
+  return res.status(200).send({ status: "success", userId: req.userId });
 };
 
 export const signOut = (req: Request, res: Response) => {
-  return res
-    .status(200)
-    .json({
-      message:
-        "Sign out successful. Auth token cleared on the client side.",
-    });
+  return res.status(200).json({
+    status: "success",
+    message: "Sign out successful. Auth token cleared on the client side.",
+  });
 };
 
 export const signUp = async (
@@ -62,7 +60,9 @@ export const signUp = async (
 
     logger.info("user: ", user);
     if (user) {
-      return res.status(400).json({ message: "User already exist" });
+      return res
+        .status(400)
+        .json({ status: "failed", message: "User already exist" });
     }
 
     // // create /register (Blacklisted)
@@ -79,7 +79,7 @@ export const signUp = async (
 
     return res
       .status(200)
-      .send({ success: true, message: "User registered Ok", token });
+      .send({ status: "success", message: "User registered Ok", token });
   } catch (err: any) {
     return next(err);
   }

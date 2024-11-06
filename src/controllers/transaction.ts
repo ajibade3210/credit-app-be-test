@@ -13,13 +13,7 @@ export const transferFunds = async (
   try {
     const trx = await knex.transaction();
 
-    const {
-      mandateId,
-      beneficiaryId,
-      amount,
-      narration,
-      currency,
-    } = req.body; // Id can be switched to Acc NO
+    const { mandateId, beneficiaryId, amount, narration, currency } = req.body; // Id can be switched to Acc NO
 
     if (amount <= 0) {
       return res
@@ -40,12 +34,35 @@ export const transferFunds = async (
     );
 
     if (result && result.message !== "Transfer complete") {
-      return res
-        .status(400)
-        .json({ success: false, message: `Transaction failed ${result.message}` });
+      return res.status(400).json({
+        status: "failed",
+        message: `Transaction failed ${result.message}`,
+      });
     }
     await trx.commit();
     res.status(200).json(result);
+  } catch (err: any) {
+    return next(err);
+  }
+};
+
+export const getTransactionDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { transferId } = req.params;
+    const result = await transferModel.getTransactionDetails(
+      Number(transferId)
+    );
+
+    if (!result.transaction) {
+      return res
+        .status(400)
+        .send({ status: "failed", message: "Transaction not found" });
+    }
+    return res.status(200).send(result);
   } catch (err: any) {
     return next(err);
   }
