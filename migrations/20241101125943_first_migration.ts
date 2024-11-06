@@ -4,7 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   const exists = await knex.schema.hasTable("users");
   if (!exists) {
     await knex.schema
-      .createTable("Users", table => {
+      .createTable("users", table => {
         table.increments("id").primary(); // Auto-incrementing integer ID
         table.string("bvn").notNullable();
         table.string("first_name").notNullable();
@@ -16,7 +16,7 @@ export async function up(knex: Knex): Promise<void> {
         table.string("unique_email").notNullable().unique();
         table.timestamps(true, true);
       })
-      .createTable("Wallets", table => {
+      .createTable("wallets", table => {
         table.increments("id").primary();
         table.decimal("balance", 14, 2).notNullable().defaultTo(0);
         table.string("currency", 3).notNullable();
@@ -37,7 +37,7 @@ export async function up(knex: Knex): Promise<void> {
         table.timestamps(true, true);
         table.unique(["user_id", "type"]);
       })
-      .createTable("Transactions", table => {
+      .createTable("transactions", table => {
         table.increments("id").primary();
         table.string("amount").notNullable();
         table.string("reference").notNullable();
@@ -70,7 +70,7 @@ export async function up(knex: Knex): Promise<void> {
 
 export async function down(knex: Knex): Promise<void> {
   await knex.schema
-    .dropTableIfExists("Transactions")
+    .dropTableIfExists("transactions")
     .dropTableIfExists("wallets")
     .dropTableIfExists("users");
 }

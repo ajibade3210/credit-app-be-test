@@ -19,7 +19,7 @@ export async function seed(knex: Knex): Promise<void> {
   const wallets = Array(SEED_COUNT)
     .fill(null)
     .map((_, idx) => createWallets(idx));
-  await knex("Wallets").insert(wallets);
+  await knex("wallets").insert(wallets);
   // .onConflict("user_id") // Define your unique constraint
   // .ignore();
 }

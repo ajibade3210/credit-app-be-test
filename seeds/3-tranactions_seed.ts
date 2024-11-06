@@ -4,10 +4,10 @@ import { faker } from "@faker-js/faker";
 import { Transaction } from "../src/utils/types";
 
 export async function seed(knex: Knex): Promise<void> {
-  const existingTransactions = await knex("Transactions").select("id").first();
+  const existingTransactions = await knex("transactions").select("id").first();
   if (existingTransactions) return;
 
-  const getUserWallet = await knex("Wallets")
+  const getUserWallet = await knex("wallets")
     .select("id", "user_id")
     .where("id", 1);
   if (getUserWallet.length > 0) {
@@ -25,7 +25,7 @@ export async function seed(knex: Knex): Promise<void> {
       beneficiary_id,
     };
 
-    await knex("Transactions").insert([seed_data]);
+    await knex("transactions").insert([seed_data]);
     // .onConflict("wallet_id") // Define your unique constraint
     // .ignore();
   }

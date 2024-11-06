@@ -8,7 +8,7 @@ class TransactionModel extends BaseModel<Transaction> {
   private walletModel: WalletModel;
 
   constructor() {
-    super("Transactions");
+    super("transactions");
     this.walletModel = new WalletModel();
   }
 
@@ -77,7 +77,10 @@ class TransactionModel extends BaseModel<Transaction> {
         Number(transactionId),
         transaction
       );
-      return { message: "Transfer complete", transfer_details: transfer_details };
+      return {
+        message: "Transfer complete",
+        transfer_details: transfer_details,
+      };
     } catch (error) {
       if (!trx) await transaction.rollback();
       console.error("Error transferring funds:", error);
