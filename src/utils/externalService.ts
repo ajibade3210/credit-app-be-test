@@ -1,21 +1,26 @@
 import axios, { AxiosError } from "axios";
-import { EmployeeResponse, ErrorResponseData, ServiceInterface } from "./types";
+import { KarmaResponse, ErrorResponseData, ServiceInterface } from "./types";
+import { logger } from "../utils/logger";
+
+const authToken = process.env.LENDSQR_APP_KEY;
 
 export const Service: ServiceInterface = {
-  Lendurl: {
+  Lendsqr: {
     url: process.env.BLACKLIST || "",
-    async fetchEmployee(email: string) {
+    async checkIfBlacklisted(identity: string) {
       try {
-        const getRecord = `${this.url}/employee_record/employee/${email}`;
-        const response = await axios.get<EmployeeResponse>(getRecord);
-        return response.data.data[0];
+        const url = `${this.url}/karma/${identity}`;
+        const response = await axios.get<KarmaResponse>(url, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        return response.data;
       } catch (error) {
         const axiosError = error as AxiosError<ErrorResponseData>;
-        const externalError = new Error(
-          axiosError.response?.data?.message || "An error occurred"
-        );
-        (externalError as any).status = axiosError.response?.status;
-        throw externalError;
+        const message = axiosError.response?.data?.message || "An error occurred";
+        logger.info(message);
+        return false;
       }
     },
   },

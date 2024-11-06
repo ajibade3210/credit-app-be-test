@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { logger } from "../utils/logger";
 import UserModel from "../models/User";
+import { Service } from "../utils/externalService";
 
 export const signIn = async (
   req: Request,
@@ -58,16 +59,24 @@ export const signUp = async (
       unique_email: req.body.unique_email,
     });
 
-    logger.info("user: ", user);
     if (user) {
       return res
         .status(400)
         .json({ status: "failed", message: "User already exist" });
     }
 
-    // // create /register (Blacklisted)
-    const hash = await bcrypt.hash(req.body.password, 8);
+    // check blacklist
+    const isBlacklisted = await Service.Lendsqr.checkIfBlacklisted(
+      req.body.unique_email
+    );
 
+    if (isBlacklisted && isBlacklisted.data?.default_date) {
+      return res
+        .status(400)
+        .json({ message: "This user has been blacklisted" });
+    }
+
+    const hash = await bcrypt.hash(req.body.password, 8);
     const userId = await userModel.create({
       ...req.body,
       password: hash,

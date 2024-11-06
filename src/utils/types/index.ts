@@ -43,7 +43,7 @@ declare module "knex/types/tables" {
   }
 }
 
-export interface EmployeeResponse {
+export interface KarmaResponse {
   data: { [key: string]: any }[];
 }
 
@@ -52,8 +52,8 @@ export interface ErrorResponseData {
 }
 
 export interface ServiceInterface {
-  Lendurl: {
+  Lendsqr: {
     url: string;
-    fetchEmployee: (email: string) => Promise<any>;
+    checkIfBlacklisted: (identity: string) => Promise<any>;
   };
 }
