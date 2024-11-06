@@ -62,7 +62,7 @@ describe("User Controller Tests", () => {
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty(
       "message",
-      "Transaction failed Wallet not found"
+      "Transaction failed Receiver's wallet not found"
     );
   });
 
