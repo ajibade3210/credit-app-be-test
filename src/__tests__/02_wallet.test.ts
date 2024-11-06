@@ -10,7 +10,7 @@ describe("User Controller Tests", () => {
       .set("Authorization", `Bearer ${authToken}`);
     expect(response.status).toBe(201);
     expect(response.body.wallet).toHaveProperty("id");
-    expect(response.body.wallet).toHaveProperty("balance", 0);
+    expect(response.body.wallet).toHaveProperty("balance", "0.00");
     expect(response.body.wallet).toHaveProperty("type", "regular");
     expect(response.body.wallet).toHaveProperty("currency", "NGN");
     expect(response.body).toHaveProperty(
