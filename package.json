@@ -4,7 +4,7 @@
   "description": "Hotel Server...",
   "main": "./src/index.ts",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest",
+    "test": "cross-env NODE_ENV=test jest -- --forceExit",
     "dev": "nodemon",
     "build": "npm install && npx tsc",
     "start": "node ./dist/src/index.js",
