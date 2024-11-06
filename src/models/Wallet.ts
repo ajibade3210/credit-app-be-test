@@ -48,7 +48,6 @@ class WalletModel extends BaseModel<Wallet> {
         logger.info("Wallet not found");
         return undefined;
       }
-      console.log("wallet:***** >> ", wallet && wallet.id);
 
       const newBalance = Number(wallet.balance) + Number(amount);
       const updatedWallet = await this.update(
