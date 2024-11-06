@@ -1,14 +1,14 @@
 import axios, { AxiosError } from "axios";
-import { EmployeeResponse, ErrorResponseData, ServiceInterface } from "./types";
+import { KarmaResponse, ErrorResponseData, ServiceInterface } from "./types";
 
 export const Service: ServiceInterface = {
-  Lendurl: {
+  Lendsqr: {
     url: process.env.BLACKLIST || "",
-    async fetchEmployee(email: string) {
+    async checkIfBlacklisted(identity: string) {
       try {
-        const getRecord = `${this.url}/employee_record/employee/${email}`;
-        const response = await axios.get<EmployeeResponse>(getRecord);
-        return response.data.data[0];
+        const url = `${this.url}/karma/${identity}`;
+        const response = await axios.get<KarmaResponse>(url);
+        return response.data;
       } catch (error) {
         const axiosError = error as AxiosError<ErrorResponseData>;
         const externalError = new Error(

@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { logger } from "../utils/logger";
 import UserModel from "../models/User";
+import { Service } from "../utils/externalService";
 
 export const signIn = async (
   req: Request,
@@ -41,12 +42,9 @@ export const validateToken = (req: Request, res: Response) => {
 };
 
 export const signOut = (req: Request, res: Response) => {
-  return res
-    .status(200)
-    .json({
-      message:
-        "Sign out successful. Auth token cleared on the client side.",
-    });
+  return res.status(200).json({
+    message: "Sign out successful. Auth token cleared on the client side.",
+  });
 };
 
 export const signUp = async (
@@ -60,14 +58,22 @@ export const signUp = async (
       unique_email: req.body.unique_email,
     });
 
-    logger.info("user: ", user);
     if (user) {
       return res.status(400).json({ message: "User already exist" });
     }
 
-    // // create /register (Blacklisted)
-    const hash = await bcrypt.hash(req.body.password, 8);
+    // check blacklist
+    // const isBlacklisted = await Service.Lendsqr.checkIfBlacklisted(
+    //   req.body.unique_email
+    // );
 
+    // if (isBlacklisted && isBlacklisted.data) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "This user has been blacklisted" });
+    // }
+
+    const hash = await bcrypt.hash(req.body.password, 8);
     const userId = await userModel.create({
       ...req.body,
       password: hash,
