@@ -60,7 +60,7 @@ class UserModel extends BaseModel<User> {
     user: (User & { transactions?: Transaction[] }) | undefined;
   }> {
     const result = await knex("users")
-      .leftJoin("transactions", "users.id", "transactions.mandate_id")
+      .leftJoin("Transactions", "users.id", "transactions.mandate_id")
       .select(
         "users.*",
         "transactions.id as transaction_id",
@@ -113,7 +113,7 @@ class UserModel extends BaseModel<User> {
     user: (User & { transactions?: Transaction[] }) | undefined;
   }> {
     const result = await knex("users")
-      .leftJoin("transactions", "users.id", "transactions.beneficiary_id")
+      .leftJoin("Transactions", "users.id", "transactions.beneficiary_id")
       .select(
         "users.*",
         "transactions.id as transaction_id",
@@ -165,7 +165,7 @@ class UserModel extends BaseModel<User> {
         })
       | undefined;
   }> {
-    const result = await knex("transactions")
+    const result = await knex("Transactions")
       .leftJoin(
         "users as mandate_user",
         "transactions.mandate_id",

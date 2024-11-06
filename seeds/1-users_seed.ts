@@ -49,5 +49,5 @@ export async function seed(knex: Knex): Promise<void> {
   const testUserData =
     process.env.NODE_ENV === "test" ? [await createTestUser()] : [];
 
-  await knex("users").insert([ ...users, ...testUserData]);
+  await knex("Users").insert([ ...users, ...testUserData]);
 }
